@@ -34,7 +34,7 @@ router.post('/create', function(req,res){
         "success": async function(form){
             //insert into the products table using bookshelf
             //the model represents the table, one instance of the model represents a row
-            const product = new Product;
+            const product = new Product();
             product.set("name", form.data.name);
             product.set("cost", form.data.cost);
             product.set("description", form.data.description);
