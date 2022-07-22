@@ -1,0 +1,8 @@
+{
+    "dev":{
+        "driver": "mysql",
+        "user": "foofoo",
+        "password": "barbar",
+        "database": "organic"
+    }
+}

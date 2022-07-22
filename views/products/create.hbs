@@ -3,5 +3,10 @@
 <h1>
     Create a New Product
 </h1>
+<form method="POST">
+    {{!-- triple braces to execute html inside unescaped--}}
+    {{{form}}}
+    <input type="submit" class="btn btn-primary my-3" />
+</form>
 {{/block}}
 {{/extends}}
