@@ -29,7 +29,6 @@ app.use("/", landingRoutes)
 app.use("/products", productRoutes) // /products is a prefix to the routes in products.js, linear search matching
 
 
-
 async function main(){
 }
 main();
