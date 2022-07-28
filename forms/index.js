@@ -1,5 +1,6 @@
 // import in caolan forms
 const forms = require("forms");
+const widgets = forms.widgets;
 // create some shortcuts
 const fields = forms.fields;
 const validators = forms.validators;
@@ -26,7 +27,7 @@ const bootstrapField = function (name, object) {
 
 
 //this function will return an instance of the create prodcut form
-const createProductForm = ()=>{
+const createProductForm = (categories)=>{
     return forms.create({
         "name": fields.string({
             required: true,
@@ -41,6 +42,18 @@ const createProductForm = ()=>{
             required: true,
             errorAfterField: true,
         }),
+        'category_id': fields.string({
+            label:'Category',
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            //choices: [[1001, "meat"], [1002,"veg"]]
+            choices: categories
+        })
+
     })
 }
 module.exports = {createProductForm, bootstrapField}

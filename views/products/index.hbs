@@ -3,12 +3,16 @@
 <h1>
     Products
 </h1>
+<a href="products/create" class="btn btn-sm btn-primary">Add New</a>
 <table class="table">
     <thead>
         <tr>
             <th>Name</th>
             <th>Description</th>
             <th>Cost</th>
+            <th>Categories</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +21,9 @@
             <td>{{this.name}}</td>
             <td>{{this.description}}</td>
             <td>${{this.cost}}</td>
+            <td>{{this.category.name}}</td>
+            <td><a href="products/{{this.id}}/update" class="btn btn-sm btn-primary">Update</a></td>
+            <td><a href="products/{{this.id}}/delete" class="btn btn-sm btn-danger">Delete</a></td>
         </tr>
         {{/each}}
     </tbody>

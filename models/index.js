@@ -3,6 +3,24 @@ const bookshelf = require("../bookshelf") // by default if we import a folder, n
 //a bookshelf model represents one table
 //name of the model (the first argument) must be 1. SINGULAR form of table name, 2. the first letter must be upper case (ie. products --> Product)
 const Product = bookshelf.model("Product", {
-    tableName: "products" //"products must match the table name on the database"
+    tableName: "products", //"products must match the table name on the database"
+
+    //the name of the function is the name of the relationship
+    //the name MUST match the model name, but singular and always lowercase
+    category() {
+        return this.belongsTo('Category')
+    }
 })
-module.exports = {Product};
+
+const Category = bookshelf.model('Category',{
+    tableName: 'categories',
+
+    //the name of the function for a hasmany relationship should be the
+    //plural form of the corresponding model in plural form and all lower case
+    products() {
+        return this.hasMany('Product');
+    }
+
+})
+
+module.exports = {Product, Category};
