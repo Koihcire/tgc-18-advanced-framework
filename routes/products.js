@@ -5,6 +5,7 @@ const { createProductForm, bootstrapField } = require("../forms")
 
 //import in the product model
 const { Product, Category, Tag } = require('../models');
+const { checkIfAuthenticated } = require("../middlewares");
 
 router.get('/', async function (req, res) {
 
@@ -18,7 +19,7 @@ router.get('/', async function (req, res) {
     });
 });
 
-router.get('/create', async function (req, res) {
+router.get('/create', checkIfAuthenticated, async function (req, res) {
     // fetch all the categories 
     const categories = await Category.fetchAll().map(category => {
         return [category.get('id'), category.get('name')]
@@ -36,7 +37,7 @@ router.get('/create', async function (req, res) {
     });
 })
 
-router.post('/create', async function (req, res) {
+router.post('/create', checkIfAuthenticated, async function (req, res) {
     // fetch all the categories 
     const categories = await Category.fetchAll().map(category => {
         return [category.get('id'), category.get('name')]
@@ -60,6 +61,10 @@ router.post('/create', async function (req, res) {
                 //form.data.tags will contain the ids of the select tag separated by comma
                 await product.tags().attach(form.data.tags.split(","))
             }
+
+            // add in the flash success message
+            //req.flash is available because we did a app.use(flash()) in index.js
+            req.flash("success_messages", `New Product ${product.get('name')} has been created`)
 
             res.redirect("/products")
         },
