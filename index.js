@@ -55,10 +55,12 @@ wax.setLayoutPath("./views/layouts");
 const landingRoutes = require('./routes/landing')
 const productRoutes = require("./routes/products")
 const userRoutes = require('./routes/users')
+const cloudinaryRoutes = require('./routes/cloudinary.js')
 
-app.use("/", landingRoutes)
-app.use("/products", productRoutes) // /products is a prefix to the routes in products.js, linear search matching
-app.use('/users', userRoutes)
+app.use("/", landingRoutes);
+app.use("/products", productRoutes); // /products is a prefix to the routes in products.js, linear search matching
+app.use('/users', userRoutes);
+app.use('/cloudinary', cloudinaryRoutes);
 
 async function main(){
 }

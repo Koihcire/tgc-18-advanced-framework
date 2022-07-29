@@ -3,6 +3,14 @@
 <h1>Update Product: {{product.name}}</h1>
 <form method="POST">
     {{{form}}}
+    <div>     
+        {{#if product.image_url}}
+        <img src="{{product.image_url}}" id="uploaded_image" />
+        {{else}}
+        <img src="" style="display:none" id="uploaded_image" />
+        {{/if}}
+    </div>
+
     <input type="hidden" value="{{csrfToken}}" name="_csrf" />
     <input type="submit" value="Update Product" class="btn btn-primary"/>
 </form>

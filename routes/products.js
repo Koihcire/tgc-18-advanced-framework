@@ -33,7 +33,10 @@ router.get('/create', checkIfAuthenticated, async function (req, res) {
     res.render("products/create", {
 
         //get html version of the form formatted using bootstrap
-        form: productForm.toHTML(bootstrapField)
+        form: productForm.toHTML(bootstrapField),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
     });
 })
 
@@ -55,6 +58,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
             product.set("cost", form.data.cost);
             product.set("description", form.data.description);
             product.set("category_id", form.data.category_id);
+            product.set('image_url', form.data.image_url);
 
             await product.save();
             if (form.data.tags) {
@@ -107,6 +111,8 @@ router.get('/:product_id/update', async (req, res) => {
     productForm.fields.description.value = product.get('description');
     productForm.fields.category_id.value = product.get('category_id');
 
+    productForm.fields.image_url.value = product.get('image_url');
+
     //fill in multi select for tags
     let selectedTags = await product.related('tags').pluck('id');
     // console.log(selectedTags);
@@ -114,7 +120,11 @@ router.get('/:product_id/update', async (req, res) => {
 
     res.render('products/update', {
         'form': productForm.toHTML(bootstrapField),
-        'product': product.toJSON()
+        'product': product.toJSON(),
+
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
     })
 
 })
