@@ -1,8 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const crypto = require('crypto');
 
 // import in the User model
 const { User } = require('../models');
+
+const getHashedPassword = (password) => {
+    const sha256 = crypto.createHash('sha256');
+    const hash = sha256.update(password).digest('base64');
+    return hash;
+}
 
 const { createUserForm, bootstrapField, createLoginForm } = require('../forms');
 const { route } = require("./landing");
@@ -21,7 +28,7 @@ router.post('/signup', async (req, res) => {
         success: async (form) => {
             const user = new User({
                 'username': form.data.username,
-                'password': form.data.password,
+                'password': getHashedPassword(form.data.password),
                 'email': form.data.email
             });
             await user.save();
@@ -51,7 +58,7 @@ router.post('/login', async (req, res) => {
             // ...find the user by email and password
             const user = await User.where({
                 'email': form.data.email,
-                'password': form.data.password
+                'password': getHashedPassword(form.data.password)
             }).fetch({
                 require: false
             }

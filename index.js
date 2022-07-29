@@ -2,6 +2,7 @@ const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
 const session = require ('express-session');
+const csrf = require('csurf');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
 require("dotenv").config();
@@ -27,6 +28,14 @@ app.use(session({
     resave: false, // do we automatically recreate the session even if there is no change to it (no in this case)
     saveUninitialized: true //if new browser connects do we create a new session
 }));
+
+//enable csruf protection
+app.use(csrf());
+
+app.use(function(req,res,next){
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
 
 //register flash messages
 app.use(flash());
