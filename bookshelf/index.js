@@ -1,8 +1,8 @@
 const knex = require ("knex")({
     client: "mysql", 
     connection: {
-        user: "foofoo",
-        password: "barbar",
+        user: "foo",
+        password: "bar",
         database: "organic"
     }
 })
