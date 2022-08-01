@@ -5,6 +5,13 @@
 </h1>
 <a href="products/create" class="btn btn-sm btn-primary">Add New</a>
 <table class="table">
+
+    <h2>Search</h2>
+    <form method="GET">
+        {{{form}}}
+        <input type="submit" class="mb-3 mt-3 btn btn-sm btn-primary" value="Search" />
+    </form>
+
     <thead>
         <tr>
             <th>Name</th>
@@ -25,7 +32,7 @@
             <td>${{this.cost}}</td>
             <td>{{this.category.name}}</td>
             <td>{{#each this.tags}}
-                    <span class=" badge bg-dark">{{this.name}}</span>
+                <span class=" badge bg-dark">{{this.name}}</span>
                 {{/each}}
             </td>
             <td><img src={{this.thumbnail_url}}></img></td>

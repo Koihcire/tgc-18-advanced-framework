@@ -25,7 +25,6 @@ const bootstrapField = function (name, object) {
     return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
-
 //this function will return an instance of the create prodcut form
 const createProductForm = (categories, tags)=>{
     return forms.create({
@@ -106,4 +105,37 @@ const createLoginForm = () => {
     })
 }
 
-module.exports = {createProductForm, bootstrapField, createUserForm, createLoginForm}
+const createSearchForm = (categories, tags) => {
+    //required will be false since all search fields are optional
+    return forms.create({
+        'name': fields.string({
+            required: false,
+            errorAfterField: true,
+        }),
+        'min_cost': fields.string({
+            required: false,
+            errorAfterField: true,
+            'validators': [validators.integer()]
+        }),
+          'max_cost': fields.string({
+            required: false,
+            errorAfterField: true,
+            'validators': [validators.integer()]
+        }),
+        'category_id': fields.string({
+            label: "Category",
+            required: false,
+            errorAfterField: true,
+            widget: widgets.select(),
+            choices: categories
+        }),
+        'tags': fields.string({
+            required:false,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: tags
+        }),
+    })
+}
+
+module.exports = {createProductForm, bootstrapField, createUserForm, createLoginForm, createSearchForm}

@@ -1,23 +1,94 @@
 const express = require("express");
 const { route } = require("./landing");
 const router = express.Router();
-const { createProductForm, bootstrapField } = require("../forms")
+const { createProductForm, bootstrapField, createSearchForm } = require("../forms")
 
 //import in the product model
 const { Product, Category, Tag } = require('../models');
 const { checkIfAuthenticated } = require("../middlewares");
 
 router.get('/', async function (req, res) {
+    // fetch all the categories 
+    const categories = await Category.fetchAll().map(category => {
+        return [category.get('id'), category.get('name')]
+    })
+    categories.unshift([0, "---Any Category---"]);
+    console.log(categories);
+
+    //fetch all the tags
+    const tags = await Tag.fetchAll().map(tag => [tag.get('id'), tag.get('name')]);
 
     //fetch all products
-    let products = await Product.collection().fetch({
-        "withRelated": ['category', 'tags'] //functions like a join
-    });
+    // let products = await Product.collection().fetch({
+    //     "withRelated": ['category', 'tags'] //functions like a join
+    // });
 
-    res.render("products/index", {
-        products: products.toJSON(),
-    });
-});
+    //create instance of search form
+    const searchForm = createSearchForm(categories, tags);
+
+    //create a query builder
+    let query = Product.collection();
+
+    //our search logic begins here
+    searchForm.handle(req, {
+        'success': async function (form) {
+            if(form.data.name){
+                query.where('name', 'like', '%' + form.data.name + '%');
+            };
+            if(form.data.min_cost){
+                query.where('cost', '>=', form.data.min_cost)
+            };
+            if(form.data.max_cost){
+                query.where('cost', '<=', form.data.max_cost)
+            };
+            if (form.data.category_id && form.data.category_id != '0'){
+                query.where('category_id', '=', form.data.category_id )
+            };
+            if(form.data.tags){
+                //first argument: sql clause
+                //second argument: which table
+                //third: one of the keys
+                //fourth: the key to joiin with
+                query.query('join', 'products_tags', 'products.id', 'product_id' )
+                .where ('tag_id' , 'in', form.data.tags.split(','))
+            }
+
+            const products = await query.fetch({
+                "withRelated": ['category', 'tags']
+            })
+
+            res.render("products/index", {
+                products: products.toJSON(),
+                form: searchForm.toHTML(bootstrapField)
+            });
+        },
+        'empty': async function () {
+            const products = await query.fetch({
+                "withRelated": ['category', 'tags']
+            })
+
+            res.render("products/index", {
+                products: products.toJSON(),
+                form: searchForm.toHTML(bootstrapField),
+                categories: categories,
+                tags: tags
+            });
+        },
+        'error': async function(){
+
+        }
+    })
+})
+
+// const products = await query.fetch({
+//     "withRelated": ['category', 'tags']
+// })
+
+// res.render("products/index", {
+//     products: products.toJSON(),
+//     forms: searchForm.toHTML(bootstrapField)
+// });
+// });
 
 router.get('/create', checkIfAuthenticated, async function (req, res) {
     // fetch all the categories 
@@ -30,7 +101,10 @@ router.get('/create', checkIfAuthenticated, async function (req, res) {
 
     const productForm = createProductForm(categories, tags);
 
+    let activeUser = req.session.user
+
     res.render("products/create", {
+        activeUser: activeUser,
 
         //get html version of the form formatted using bootstrap
         form: productForm.toHTML(bootstrapField),
@@ -170,7 +244,7 @@ router.post('/:product_id/update', checkIfAuthenticated, async (req, res) => {
             //alternatively remove all tags and add all tags again
             //await products.tags
 
-            
+
             res.redirect("/products");
         },
         'error': async function (form) {
