@@ -24,7 +24,7 @@ app.use(
 //set up sessions
 app.use(session({
     store: new FileStore(), //means we want to use files to store sessions
-    secret: 'keyboard cat', //used to generate the session id
+    secret: process.env.SESSION_SECRET, //used to generate the session id
     resave: false, // do we automatically recreate the session even if there is no change to it (no in this case)
     saveUninitialized: true //if new browser connects do we create a new session
 }));
