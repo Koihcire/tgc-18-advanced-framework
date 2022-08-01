@@ -46,7 +46,10 @@
         cloudName: `{{cloudinaryName}}`,
         apiKey: '{{cloudinaryApiKey}}',
         uploadPreset: '{{cloudinaryPreset}}',
-        uploadSignature: generateSignature
+        uploadSignature: generateSignature,
+        cropping: true,
+        showSkipCropButton: false,
+        croppingAspectRatio: 1, //takes in a decimal value of W/D
     }, (error, result) => {
         if (!error && result && result.event === "success") {
             console.log('Done! Here is the image info: ', result.info);
@@ -56,6 +59,7 @@
             document.querySelector('#id_image_url').value = result.info.url;
             document.querySelector('#uploaded_image').src = result.info.url;
             document.querySelector('#uploaded_image').style.display = 'inline';
+            document.querySelector('#id_thumbnail_url').value = result.info.thumbnail_url;
         }
     })
 
@@ -65,7 +69,6 @@
         myWidget.open();
     }, false);
 </script>
-
 
 {{/block}}
 {{/extends}}

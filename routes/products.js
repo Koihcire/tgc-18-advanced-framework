@@ -15,7 +15,7 @@ router.get('/', async function (req, res) {
     });
 
     res.render("products/index", {
-        products: products.toJSON()
+        products: products.toJSON(),
     });
 });
 
@@ -59,6 +59,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
             product.set("description", form.data.description);
             product.set("category_id", form.data.category_id);
             product.set('image_url', form.data.image_url);
+            product.set('thumbnail_url', form.data.thumbnail_url);
 
             await product.save();
             if (form.data.tags) {
@@ -84,7 +85,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
 })
 
 //target URL: /products/:product_id/update, but index.js already has a /products prefix
-router.get('/:product_id/update', async (req, res) => {
+router.get('/:product_id/update', checkIfAuthenticated, async (req, res) => {
     //get categories
     // fetch all the categories 
     const categories = await Category.fetchAll().map(category => {
@@ -110,7 +111,7 @@ router.get('/:product_id/update', async (req, res) => {
     productForm.fields.cost.value = product.get('cost');
     productForm.fields.description.value = product.get('description');
     productForm.fields.category_id.value = product.get('category_id');
-
+    //fill in the hidden image form field
     productForm.fields.image_url.value = product.get('image_url');
 
     //fill in multi select for tags
@@ -129,7 +130,7 @@ router.get('/:product_id/update', async (req, res) => {
 
 })
 
-router.post('/:product_id/update', async (req, res) => {
+router.post('/:product_id/update', checkIfAuthenticated, async (req, res) => {
     // fetch all the categories 
     const categories = await Category.fetchAll().map(category => {
         return [category.get('id'), category.get('name')]
@@ -187,7 +188,7 @@ router.post('/:product_id/update', async (req, res) => {
     })
 })
 
-router.get('/:product_id/delete', async (req, res) => {
+router.get('/:product_id/delete', checkIfAuthenticated, async (req, res) => {
     // fetch the product that we want to delete
     const product = await Product.where({
         'id': req.params.product_id
@@ -201,7 +202,7 @@ router.get('/:product_id/delete', async (req, res) => {
 
 });
 
-router.post('/:product_id/delete', async (req, res) => {
+router.post('/:product_id/delete', checkIfAuthenticated, async (req, res) => {
     // fetch the product that we want to delete
     const product = await Product.where({
         'id': req.params.product_id

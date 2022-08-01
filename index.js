@@ -51,6 +51,9 @@ app.use(function (req, res, next) {
 wax.on(hbs.handlebars);
 wax.setLayoutPath("./views/layouts");
 
+//can create a middleware for cloudinary env data
+
+
 //add in the router files
 const landingRoutes = require('./routes/landing')
 const productRoutes = require("./routes/products")

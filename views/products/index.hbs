@@ -28,7 +28,7 @@
                     <span class=" badge bg-dark">{{this.name}}</span>
                 {{/each}}
             </td>
-            <td>{{this.image_url}}</td>
+            <td><img src={{this.thumbnail_url}}></img></td>
             <td><a href="products/{{this.id}}/update" class="btn btn-sm btn-primary">Update</a></td>
             <td><a href="products/{{this.id}}/delete" class="btn btn-sm btn-danger">Delete</a></td>
         </tr>
