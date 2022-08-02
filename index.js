@@ -1,7 +1,7 @@
 const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
-const session = require ('express-session');
+const session = require('express-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
@@ -9,7 +9,7 @@ require("dotenv").config();
 
 const app = express()
 
-app.set ("view engine", "hbs")
+app.set("view engine", "hbs")
 
 const { getCart } = require("./dal/cart");
 
@@ -32,10 +32,24 @@ app.use(session({
 }));
 
 //enable csruf protection
-app.use(csrf());
+// app.use(csrf());
+const csrfInstance = csrf();
+app.use(function (req, res, next) {
+    // console.log("checking for csrf exclusion")
+    // exclude whatever url we want from CSRF protection
+    if (req.url === "/checkout/process_payment") {
+        console.log("detected")
+        return next();
+    } else {
+        csrfInstance(req, res, next);
+    }
+})
 
-app.use(function(req,res,next){
-    res.locals.csrfToken = req.csrfToken();
+
+app.use(function (req, res, next) {
+    if (req.csrfToken) {
+        res.locals.csrfToken = req.csrfToken();
+    }
     next();
 })
 
@@ -44,7 +58,7 @@ app.use(flash());
 //setup a middleware
 app.use(function (req, res, next) {
     //res.locals will contain all variables available to hbs files
-    res.locals.success_messages = req.flash("success_messages"); 
+    res.locals.success_messages = req.flash("success_messages");
     res.locals.error_messages = req.flash("error_messages");
     next();
 });
@@ -53,14 +67,14 @@ app.use(function (req, res, next) {
 wax.on(hbs.handlebars);
 wax.setLayoutPath("./views/layouts");
 
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
     res.locals.user = req.session.user;
     next();
 })
 
 //middleware to share shopping cart data
-app.use(async function(req,res,next){
-    if (req.session.user){
+app.use(async function (req, res, next) {
+    if (req.session.user) {
         const cartItems = await getCart(req.session.user.id);
         res.locals.cartCount = cartItems.toJSON().length;
     }
@@ -84,13 +98,13 @@ app.use("/", landingRoutes);
 app.use("/products", productRoutes); // /products is a prefix to the routes in products.js, linear search matching
 app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
-app.use('/checkout', checkIfAuthenticated, checkoutRoutes);
-app.use('/cart', checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
+app.use('/checkout', checkoutRoutes);
+app.use('/cart',checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
 
-async function main(){
+async function main() {
 }
 main();
 
-app.listen(3000,()=>{
+app.listen(3000, () => {
     console.log("server started")
 })

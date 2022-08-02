@@ -38,6 +38,7 @@
           </ul>
           <div>
             {{#if user}}
+            <a href="/users/profile" class="btn btn-sm btn-primary">Profile</a>
             Hi, {{user.username}}
             <a href="/cart" class="btn btn-sm btn-primary">Cart ({{cartCount}})</a>
             <a href="/users/logout" class="ml-3 btn btn-primary btn-sm">Logout</a>

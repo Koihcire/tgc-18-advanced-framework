@@ -1,9 +1,10 @@
 const express = require('express');
+const { checkIfAuthenticated } = require('../middlewares');
 const router = express.Router();
 const CartServices = require('../services/cart');
 const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY) //require stripe will return a function, call immediately and pass in secret key
 
-router.get('/', async function(req,res){
+router.get('/', checkIfAuthenticated ,async function(req,res){
     //step1: create a line item
     //each item in the shopping cart is a line item
     const items = await CartServices.getCart(req.session.user.id);
@@ -41,7 +42,8 @@ router.get('/', async function(req,res){
         cancel_url: process.env.STRIPE_SUCCESS_URL,
         //in metadata, keys are up to us but value must be a string
         metadata: {
-            'orders': metaData
+            'orders': metaData,
+            'user_id': req.session.user.id
         }
     }
 
@@ -63,6 +65,37 @@ router.get('/success', function (req,res){
 
 router.get('/cancelled', function (req,res){
     res.send('payment failed')
+})
+
+
+//webhook for stripe
+//has to be post - 1. we are changing the db based on payment info 2. stripe decides
+router.post('/process_payment', express.raw({type: 'application/json'}), async function (req,res){
+    console.log("process started")
+    let payload = req.body; //payment info is indside req.body
+    let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET; //each webhook will have one endpoint secret to ensure stripe is the one sending information to us
+    let sigHeader = req.headers["stripe-signature"]; //when stripe send us the info, there will be a signature in the header
+    let event = null;
+    //try to extract out the information and ensures that it comes from stripe
+    try {
+        event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
+        console.log(event)
+        if (event.type == 'checkout.session.completed' ){
+            console.log(event.data.object)
+            const metaData = JSON.parse(event.data.object.metadata.orders);
+            console.log(metaData)
+            //need to send a reply back to stripe or stripe will keep retrying
+            res.send({
+                'success': true
+            })
+        }
+    } catch(e) {
+        res.sendStatus(500)
+        res.send({
+            'error': e.message
+        })
+        console.log(e.message)
+    }
 })
 
 module.exports = router;
