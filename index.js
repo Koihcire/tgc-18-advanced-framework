@@ -59,11 +59,14 @@ const landingRoutes = require('./routes/landing')
 const productRoutes = require("./routes/products")
 const userRoutes = require('./routes/users')
 const cloudinaryRoutes = require('./routes/cloudinary.js')
+const cartRoutes = require('./routes/cart');
+const { checkIfAuthenticated } = require("./middlewares");
 
 app.use("/", landingRoutes);
 app.use("/products", productRoutes); // /products is a prefix to the routes in products.js, linear search matching
 app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
+app.use('/cart', checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
 
 async function main(){
 }
