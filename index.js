@@ -11,6 +11,8 @@ const app = express()
 
 app.set ("view engine", "hbs")
 
+const { getCart } = require("./dal/cart");
+
 //set up static folder
 app.use(express.static("public"))
 
@@ -51,6 +53,20 @@ app.use(function (req, res, next) {
 wax.on(hbs.handlebars);
 wax.setLayoutPath("./views/layouts");
 
+app.use(function(req,res,next){
+    res.locals.user = req.session.user;
+    next();
+})
+
+//middleware to share shopping cart data
+app.use(async function(req,res,next){
+    if (req.session.user){
+        const cartItems = await getCart(req.session.user.id);
+        res.locals.cartCount = cartItems.toJSON().length;
+    }
+    next();
+})
+
 //can create a middleware for cloudinary env data
 
 
@@ -62,6 +78,7 @@ const cloudinaryRoutes = require('./routes/cloudinary.js')
 const cartRoutes = require('./routes/cart');
 const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require("./middlewares");
+
 
 app.use("/", landingRoutes);
 app.use("/products", productRoutes); // /products is a prefix to the routes in products.js, linear search matching
