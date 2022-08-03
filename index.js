@@ -111,7 +111,7 @@ app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
 app.use('/checkout', checkoutRoutes);
 app.use('/cart',checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
-//register api routes
+//register api routes. will be protected by jwt
 app.use('/api/products', express.json(), api.products); //need express json to send the json data over to the endpoint
 app.use('/api/user', express.json(), api.user)
 

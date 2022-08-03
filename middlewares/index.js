@@ -16,7 +16,7 @@ const checkIfAuthenticatedJWT = function (req,res,next){
         //extract out the jwt and check if valid
         //example header authHeader => BEARER kjnAKJNinalknKJANSFsd
         const token = authHeader.split(' ')[1]; //split by space, take the index 1 which is jwt
-        console.log(token)
+        // console.log(token)
         jwt.verify(token, process.env.TOKEN_SECRET, function(err,tokenData){
             // err argument is null if there is no error
             //token data arugment is the data we embed

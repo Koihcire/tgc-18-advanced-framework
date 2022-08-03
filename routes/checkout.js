@@ -38,7 +38,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
     const payment = {
         payment_method_types: ['card'], //check stripe documentation for diff payment options
         line_items: lineItems,
-        success_url: process.env.STRIPE_SUCCESS_URL,
+        success_url: process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}',
         cancel_url: process.env.STRIPE_SUCCESS_URL,
         //in metadata, keys are up to us but value must be a string
         metadata: {
