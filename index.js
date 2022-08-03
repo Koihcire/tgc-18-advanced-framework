@@ -1,6 +1,7 @@
 const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
+const cors = require('cors')
 const session = require('express-session');
 const csrf = require('csurf');
 const flash = require('connect-flash');
@@ -9,9 +10,12 @@ require("dotenv").config();
 
 const app = express()
 
+//enable cors. MUST BE BEFORE SESSIONS
+app.use(cors()); 
+
 app.set("view engine", "hbs")
 
-const { getCart } = require("./dal/cart");
+
 
 //set up static folder
 app.use(express.static("public"))
@@ -37,14 +41,13 @@ const csrfInstance = csrf();
 app.use(function (req, res, next) {
     // console.log("checking for csrf exclusion")
     // exclude whatever url we want from CSRF protection
-    if (req.url === "/checkout/process_payment") {
+    if (req.url === "/checkout/process_payment" || req.url.slice(0,5) == '/api/'){
         console.log("detected")
-        return next();
+        next();
     } else {
         csrfInstance(req, res, next);
     }
 })
-
 
 app.use(function (req, res, next) {
     if (req.csrfToken) {
@@ -92,6 +95,11 @@ const cloudinaryRoutes = require('./routes/cloudinary.js')
 const cartRoutes = require('./routes/cart');
 const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require("./middlewares");
+const { getCart } = require("./dal/cart");
+
+const api = {
+    products: require('./routes/api/products')
+}
 
 
 app.use("/", landingRoutes);
@@ -100,6 +108,8 @@ app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
 app.use('/checkout', checkoutRoutes);
 app.use('/cart',checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
+//register api routes
+app.use('/api/products', express.json(), api.products); //need express json to send the json data over to the endpoint
 
 async function main() {
 }
