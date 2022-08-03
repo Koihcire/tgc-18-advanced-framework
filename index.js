@@ -7,6 +7,7 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const FileStore = require('session-file-store')(session);
 require("dotenv").config();
+const jwt = require('jsonwebtoken')
 
 const app = express()
 
@@ -96,9 +97,11 @@ const cartRoutes = require('./routes/cart');
 const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require("./middlewares");
 const { getCart } = require("./dal/cart");
+ 
 
 const api = {
-    products: require('./routes/api/products')
+    products: require('./routes/api/products'),
+    user: require('./routes/api/user')
 }
 
 
@@ -110,6 +113,7 @@ app.use('/checkout', checkoutRoutes);
 app.use('/cart',checkIfAuthenticated ,cartRoutes) //put the middleware here to apply to all routes in the cartRoutes
 //register api routes
 app.use('/api/products', express.json(), api.products); //need express json to send the json data over to the endpoint
+app.use('/api/user', express.json(), api.user)
 
 async function main() {
 }
