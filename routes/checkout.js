@@ -80,7 +80,23 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
         console.log(event)
-        if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded'){
+        // if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded') {
+        //     console.log(event.data.object)
+        //     const metaData = JSON.parse(event.data.object.metadata.orders);
+        //     console.log(metaData)
+        //     //need to send a reply back to stripe or stripe will keep retrying
+        //     res.send({
+        //         'success': true
+        //     })
+        // };
+        //get receipt and payment mode
+        if (event.type == 'charge.succeeded'){
+            const chargeData = JSON.parse(event.data.object)
+            console.log(chargeData);
+            res.send({
+                'success': true
+            })
+        } else if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded') {
             console.log(event.data.object)
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData)
@@ -89,14 +105,6 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
                 'success': true
             })
         };
-        //get receipt and payment mode
-        if (event.type == 'charge.succeeded'){
-            const chargeData = JSON.parse(event.data.object)
-            console.log(chargeData);
-            res.send({
-                'success': true
-            })
-        }
     } catch(e) {
         res.sendStatus(500)
         res.send({
