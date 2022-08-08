@@ -36,7 +36,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
     //the meta data must be a string
     let metaData = JSON.stringify(meta);
     const payment = {
-        payment_method_types: ['card'], //check stripe documentation for diff payment options
+        payment_method_types: ['card', 'paynow', 'grabpay'], //check stripe documentation for diff payment options
         line_items: lineItems,
         success_url: process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}',
         cancel_url: process.env.STRIPE_SUCCESS_URL,
