@@ -80,7 +80,7 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
         console.log(event)
-        if (event.type == 'checkout.session.completed' ){
+        if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded'){
             console.log(event.data.object)
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData)
