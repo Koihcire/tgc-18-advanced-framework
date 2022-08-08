@@ -88,6 +88,14 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
             res.send({
                 'success': true
             })
+        };
+        //get receipt and payment mode
+        if (event.type == 'charge.succeeded'){
+            const chargeData = JSON.parse(event.data.object)
+            console.log(chargeData);
+            res.send({
+                'success': true
+            })
         }
     } catch(e) {
         res.sendStatus(500)
