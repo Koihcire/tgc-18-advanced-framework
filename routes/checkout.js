@@ -48,7 +48,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
         shipping_options: [
             {
                 shipping_rate_data:{
-                    type: 'fixed-amount',
+                    type: 'fixed_amount',
                     fixed_amount: {
                         amount: 10,
                         currency: 'sgd',
@@ -68,7 +68,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
             },
             {
                 shipping_rate_data:{
-                    type: 'fixed-amount',
+                    type: 'fixed_amount',
                     fixed_amount: {
                         amount: 15,
                         currency: 'sgd',
