@@ -4,7 +4,7 @@ const router = express.Router();
 const CartServices = require('../services/cart');
 const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY) //require stripe will return a function, call immediately and pass in secret key
 
-router.get('/', checkIfAuthenticated ,async function(req,res){
+router.get('/', checkIfAuthenticated, async function (req, res) {
     //step1: create a line item
     //each item in the shopping cart is a line item
     const items = await CartServices.getCart(req.session.user.id);
@@ -27,7 +27,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
         }
 
         meta.push({
-            'product_id' : item.get('product_id'),
+            'product_id': item.get('product_id'),
             'quantity': item.get('quantity')
         })
     }
@@ -47,7 +47,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
         },
         shipping_options: [
             {
-                shipping_rate_data:{
+                shipping_rate_data: {
                     type: 'fixed_amount',
                     fixed_amount: {
                         amount: 10,
@@ -55,7 +55,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
                     },
                     display_name: 'Standard Shipping',
                     delivery_estimate: {
-                        minimum:{
+                        minimum: {
                             unit: 'business_day',
                             value: 5,
                         },
@@ -67,7 +67,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
                 }
             },
             {
-                shipping_rate_data:{
+                shipping_rate_data: {
                     type: 'fixed_amount',
                     fixed_amount: {
                         amount: 15,
@@ -75,7 +75,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
                     },
                     display_name: 'Express Shipping',
                     delivery_estimate: {
-                        minimum:{
+                        minimum: {
                             unit: 'business_day',
                             value: 5,
                         },
@@ -91,7 +91,7 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
 
     //step3: register the payment session
     let stripeSession = await Stripe.checkout.sessions.create(payment)
-    
+
 
     //step 4: user stripe to pay
     //credit card information (no, ccv) can NEVER reach our server
@@ -101,18 +101,18 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
     })
 })
 
-router.get('/success', function (req,res){
+router.get('/success', function (req, res) {
     res.send('payment success')
 })
 
-router.get('/cancelled', function (req,res){
+router.get('/cancelled', function (req, res) {
     res.send('payment failed')
 })
 
 
 //webhook for stripe
 //has to be post - 1. we are changing the db based on payment info 2. stripe decides
-router.post('/process_payment', express.raw({type: 'application/json'}), async function (req,res){
+router.post('/process_payment', express.raw({ type: 'application/json' }), async function (req, res) {
     console.log("process started")
     let payload = req.body; //payment info is indside req.body
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET; //each webhook will have one endpoint secret to ensure stripe is the one sending information to us
@@ -129,22 +129,26 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData)
             //need to send a reply back to stripe or stripe will keep retrying
+
+            const shippingRateData = await Stripe.shippingRates.retrieve(shippingRateId)
+            console.log(shippingRateData);
+            
             res.send({
                 'success': true
             })
         };
         //get receipt and payment mode
-        if (event.type == 'charge.succeeded'){
+        if (event.type == 'charge.succeeded') {
             const chargeData = event.data.object
             console.log(chargeData);
             res.send({
                 'success': true
             })
-        }; 
-        
-        const shippingRateData = await Stripe.shippingRates.retrieve(shippingRateId)
-        console.log(shippingRateData)
-    } catch(e) {
+        };
+
+
+
+    } catch (e) {
         res.sendStatus(500)
         res.send({
             'error': e.message
