@@ -14,3 +14,5 @@ GRANT ALL PRIVILEGES on sakila.* TO 'ahkow'@'localhost' WITH GRANT OPTION;
  ```
 FLUSH PRIVILEGES;
 ```
+brew tap heroku/brew && brew install heroku
+heroku login - i

@@ -45,6 +45,9 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
             'orders': metaData,
             'user_id': req.session.user.id
         },
+        shipping_address_collection: {
+            allowed_countries: ['SG']
+        },
         shipping_options: [
             {
                 shipping_rate_data: {
