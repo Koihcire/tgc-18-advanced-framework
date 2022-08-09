@@ -44,7 +44,45 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
         metadata: {
             'orders': metaData,
             'user_id': req.session.user.id
-        }
+        },
+        shipping_options: [
+            {
+                shipping_rate_data:{
+                    type: 'fixed-amount',
+                    fixed_amount: {
+                        amount: 10,
+                        currency: 'sgd',
+                    },
+                    display_name: 'Standard Shipping',
+                    minimum:{
+                        unit: 'business_day',
+                        value: 5,
+                    },
+                    maximum: {
+                        unit: 'business_day',
+                        value: 7,
+                    }
+                }
+            },
+            {
+                shipping_rate_data:{
+                    type: 'fixed-amount',
+                    fixed_amount: {
+                        amount: 15,
+                        currency: 'sgd',
+                    },
+                    display_name: 'Express Shipping',
+                    minimum:{
+                        unit: 'business_day',
+                        value: 1,
+                    },
+                    maximum: {
+                        unit: 'business_day',
+                        value: 3,
+                    }
+                }
+            }
+        ]
     }
 
     //step3: register the payment session
