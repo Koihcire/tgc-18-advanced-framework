@@ -50,7 +50,7 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
                 shipping_rate_data: {
                     type: 'fixed_amount',
                     fixed_amount: {
-                        amount: 10,
+                        amount: 1000,
                         currency: 'sgd',
                     },
                     display_name: 'Standard Shipping',
@@ -70,18 +70,18 @@ router.get('/', checkIfAuthenticated, async function (req, res) {
                 shipping_rate_data: {
                     type: 'fixed_amount',
                     fixed_amount: {
-                        amount: 15,
+                        amount: 1500,
                         currency: 'sgd',
                     },
                     display_name: 'Express Shipping',
                     delivery_estimate: {
                         minimum: {
                             unit: 'business_day',
-                            value: 5,
+                            value: 1,
                         },
                         maximum: {
                             unit: 'business_day',
-                            value: 7,
+                            value: 1,
                         }
                     }
                 }
@@ -118,7 +118,6 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET; //each webhook will have one endpoint secret to ensure stripe is the one sending information to us
     let sigHeader = req.headers["stripe-signature"]; //when stripe send us the info, there will be a signature in the header
     let event = null;
-    let shippingRateId = '';
     //try to extract out the information and ensures that it comes from stripe
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
@@ -129,10 +128,6 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData)
             //need to send a reply back to stripe or stripe will keep retrying
-
-            const shippingRateData = await Stripe.shippingRates.retrieve(shippingRateId)
-            console.log(shippingRateData);
-            
             res.send({
                 'success': true
             })
