@@ -54,13 +54,15 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
                         currency: 'sgd',
                     },
                     display_name: 'Standard Shipping',
-                    minimum:{
-                        unit: 'business_day',
-                        value: 5,
-                    },
-                    maximum: {
-                        unit: 'business_day',
-                        value: 7,
+                    delivery_estimate: {
+                        minimum:{
+                            unit: 'business_day',
+                            value: 5,
+                        },
+                        maximum: {
+                            unit: 'business_day',
+                            value: 7,
+                        }
                     }
                 }
             },
@@ -72,13 +74,15 @@ router.get('/', checkIfAuthenticated ,async function(req,res){
                         currency: 'sgd',
                     },
                     display_name: 'Express Shipping',
-                    minimum:{
-                        unit: 'business_day',
-                        value: 1,
-                    },
-                    maximum: {
-                        unit: 'business_day',
-                        value: 3,
+                    delivery_estimate: {
+                        minimum:{
+                            unit: 'business_day',
+                            value: 5,
+                        },
+                        maximum: {
+                            unit: 'business_day',
+                            value: 7,
+                        }
                     }
                 }
             }
