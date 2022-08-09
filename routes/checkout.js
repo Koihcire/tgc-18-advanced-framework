@@ -118,10 +118,12 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
     let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET; //each webhook will have one endpoint secret to ensure stripe is the one sending information to us
     let sigHeader = req.headers["stripe-signature"]; //when stripe send us the info, there will be a signature in the header
     let event = null;
+    let shippingRateId = '';
     //try to extract out the information and ensures that it comes from stripe
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
         console.log(event)
+        shippingRateId = event.data.object.shipping_rate;
         if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded') {
             console.log(event.data.object)
             const metaData = JSON.parse(event.data.object.metadata.orders);
@@ -139,6 +141,9 @@ router.post('/process_payment', express.raw({type: 'application/json'}), async f
                 'success': true
             })
         }; 
+        
+        const shippingRateData = await Stripe.shippingRates.retrieve(shippingRateId)
+        console.log(shippingRateData)
     } catch(e) {
         res.sendStatus(500)
         res.send({
