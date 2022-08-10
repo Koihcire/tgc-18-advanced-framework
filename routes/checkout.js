@@ -125,21 +125,19 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
     try {
         event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
         console.log(event)
-        shippingRateId = event.data.object.shipping_rate;
+        
         if (event.type == 'checkout.session.completed' || event.type == 'checkout.session.async_payment_succeeded') {
             console.log(event.data.object)
+            let shippingRateId = event.data.object.shipping_rate;
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData);
 
-            const shippingRate = await stripe.shippingRates.retrieve(
-                'shr_1LV7SnC9THu8vHRykjvN2wKM'
-              );
-            console.log("shipping data: ", shippingRate)
+            const shippingRate = await stripe.shippingRates.retrieve(shippingRateId);
+            console.log(shippingRate)
             //need to send a reply back to stripe or stripe will keep retrying
             res.send({
                 'success': true
             })
-
             
         };
         //get receipt and payment mode
@@ -161,5 +159,7 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
         console.log(e.message)
     }
 })
+
+
 
 module.exports = router;
