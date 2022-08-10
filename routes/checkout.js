@@ -134,6 +134,11 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
             res.send({
                 'success': true
             })
+
+            const shippingRate = await stripe.shippingRates.retrieve(
+                'shr_1LV7SnC9THu8vHRykjvN2wKM'
+              );
+            console.log("shipping data: ", shippingRate)
         };
         //get receipt and payment mode
         if (event.type == 'charge.succeeded') {
