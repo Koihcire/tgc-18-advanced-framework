@@ -132,7 +132,7 @@ router.post('/process_payment', express.raw({ type: 'application/json' }), async
             const metaData = JSON.parse(event.data.object.metadata.orders);
             console.log(metaData);
 
-            const shippingRate = await stripe.shippingRates.retrieve(shippingRateId);
+            const shippingRate = await Stripe.shippingRates.retrieve(shippingRateId);
             console.log(shippingRate)
             //need to send a reply back to stripe or stripe will keep retrying
             res.send({
